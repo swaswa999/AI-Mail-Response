@@ -150,39 +150,55 @@ def store_email_in_db(email_list, category):
     conn.close()
 
 
-# Domain : List of email threads
-# Range : email thread labeled, and calls store_email_in_db function
 def categorize_mail(email_list):
     for email in email_list:
-        # using key hard coded instead of .env so easy for you to test
         openai.api_key = api_key
 
-        prompt = 'You have access to a email chain. Categorize this email using the first email as a focus, e.g., "Internship_request", "Potential_client", "Job_offer", "Meeting_request", "General_inquiry", if it is SPAM or junk then record as : SPAM. Your response has to be one word or multiple words connected without space.'
+        # Structured input for categorization
+        email_summary = f"""
+        From: {email['From']}
+        Subject: {email['Subject']}
+        Body: {email['Body']}
+        """
 
-        email_content = str(email)
-
-        completion = openai.ChatCompletion.create(
-            model="gpt-4o",
-            store=True,
-            messages=[
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": email_content},
-            ],
+        # Categorization prompt
+        prompt = (
+            "You have access to an email thread. Use the first email as context and "
+            'categorize it. Examples: "Internship_request", "Potential_client", "Job_offer", '
+            '"Meeting_request". If it is spam or unrelated, categorize as "SPAM". Only reply '
+            "with the single-word category (e.g., Internship_request)."
         )
 
-        content = completion.choices[0].message["content"]
-        if content != "SPAM":
-            catagories.append(content)
+        try:
+            # Chat Completion request
+            completion = openai.ChatCompletion.create(
+                model="gpt-4o-mini-2024-07-18:personal::AhqgNSul 12/23/2024, 7:36 PM",
+                messages=[
+                    {"role": "system", "content": prompt},
+                    {"role": "user", "content": email_summary},
+                ],
+            )
 
-            store_email_in_db(email_list, content)
-    print(catagories)
-    result = " ".join(catagories)
-    # Open a file in write mode (this will overwrite the file if it exists)
-    with open("catagories.txt", "w") as file:
-        file.write(result)
+            category = completion.choices[0].message["content"].strip()
+            if category != "SPAM":
+                catagories.append(category)
+                # Store the categorized email in the database
+                store_email_in_db([email], category)
+
+        except Exception as e:
+            print(f"Error categorizing email: {e}")
+            continue
+
+    print("Categories:", catagories)
+    # Save categories to a text file
+    with open("categories.txt", "w") as file:
+        file.write("\n".join(catagories))
 
 
 if __name__ == "__main__":
     create_db()
     email_list = getAllEmail()
-    categorize_mail(email_list)
+    if email_list:
+        categorize_mail(email_list)
+    else:
+        print("No emails to process.")
