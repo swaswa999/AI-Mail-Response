@@ -136,3 +136,34 @@ def get_all_related_data(original_category):
         email_list = get_emails_by_category(category)
         fullData.append(email_list)
     return fullData
+
+
+# Domain: Email as str
+# Range: Category of the email
+def directClassify(email):
+    openai.api_key = api_key
+
+    # Categorization prompt
+    prompt = (
+        "You have access to an email thread. Use the first email as context and "
+        'categorize it. Examples: "Internship_request", "Potential_client", "Job_offer", '
+        '"Meeting_request". Only reply '
+        "with the single-word category (e.g., Internship_request)."
+    )
+
+    try:
+        # Chat Completion request
+        completion = openai.ChatCompletion.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": email},
+            ],
+        )
+
+        category = completion.choices[0].message["content"].strip()
+        if category != "SPAM":
+            return category
+
+    except Exception as e:
+        print(f"Error categorizing email: {e}")

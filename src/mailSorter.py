@@ -165,7 +165,7 @@ def categorize_mail(email_list):
         prompt = (
             "You have access to an email thread. Use the first email as context and "
             'categorize it. Examples: "Internship_request", "Potential_client", "Job_offer", '
-            '"Meeting_request". If it is spam or unrelated, categorize as "SPAM". Only reply '
+            '"Meeting_request". If it is spam or unrelated, categorize as "SPAM". If you see that there is no response back, and it seems automated classify as SPAM. Only reply '
             "with the single-word category (e.g., Internship_request)."
         )
 

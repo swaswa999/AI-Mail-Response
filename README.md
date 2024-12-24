@@ -10,8 +10,11 @@ A project to retrieve emails from the inbox and respond using past examples
 2. Install Dependencies
    pip install -r requirements.txt
 
-3. Open scripts and run
-   cd tests
+3. Setup google auth
+
+4. Run mailSorter
+
+5. Open scripts and run
    python tester.py //this is just as an example
 
 **Structure**
@@ -23,13 +26,7 @@ AI-Mail-Response/
 │ ├── mailSorter.py # Sort previous mail
 │ └── polish.py # Check output is ready to send
 │ └── retrieval.py # Retrieve relevant mail from database and give to create mail
-│
-├── scripts/  
-│ └── run.py # Main file to run everything
-│
-├── test/  
 │ └── tester.py # Used to test application
-│
 ├── .gitignore  
 ├── .env  
 ├── README.md  
