@@ -172,7 +172,7 @@ def categorize_mail(email_list):
         try:
             # Chat Completion request
             completion = openai.ChatCompletion.create(
-                model="gpt-4o-mini-2024-07-18:personal::AhqgNSul 12/23/2024, 7:36 PM",
+                model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": prompt},
                     {"role": "user", "content": email_summary},
